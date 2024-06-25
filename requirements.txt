@@ -4,4 +4,3 @@ yfinance
 matplotlib
 scipy
 streamlit
-tickertape
