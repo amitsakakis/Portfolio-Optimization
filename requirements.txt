@@ -4,7 +4,3 @@ yfinance
 matplotlib
 scipy
 streamlit
-datetime
-functools
-time
-math
