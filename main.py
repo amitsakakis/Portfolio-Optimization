@@ -8,7 +8,6 @@ import streamlit as st
 import datetime
 from multiprocessing import Pool
 from functools import partial
-import time
 import math
 
 import tickertape
@@ -138,7 +137,7 @@ def plot_efficient_frontier(tickers, returns, optimized_weights, criterion_name,
     scatter = ax.scatter(results[1, :], results[0, :], c=results[2, :], cmap='viridis')
     plt.colorbar(scatter, ax=ax, label='Sharpe Ratio')
     
-    # Only plot the red star if the optimization criterion is not 'sharpe'
+    # Only plot the red star if the optimization criterion is not 'sharpe', ie don't show the red star if it is sharpe
     if optimization_criterion != 'sharpe':
         ax.scatter(sdp, rp, marker='*', color='r', s=100, label='Maximum Sharpe Ratio')
     
@@ -179,7 +178,7 @@ def display_results(initial_guess, optimized_weights, returns, criterion_name):
     st.markdown("### Optimized Weights:")
     st.table(optimized_weights_df)
 
-st.title("Stock Portfolio Optimization App")
+st.title("My Optimized Portfolio")
 st.subheader("Akaash Mitsakakis-Nath")
 st.markdown(""" This app performs portfolio optimization using different optimization techniques. Enter your Stock tickers, initial allocations, historical data range, and finally the desired optimization criterion to get started.""")
 st.markdown("""
@@ -217,7 +216,7 @@ else:
         end_date = st.date_input("End date", datetime.date.today())
         optimization_criterion = st.selectbox("Optimization criterion:", ['sharpe', 'cvar', 'sortino', 'volatility'])
 
-    # Add a button to trigger portfolio optimization
+    #Button to trigger portfolio optimization
 if st.button("Optimize Portfolio"):
     if start_date and end_date:
         try:
