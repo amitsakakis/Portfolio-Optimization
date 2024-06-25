@@ -178,7 +178,7 @@ def display_results(initial_guess, optimized_weights, returns, criterion_name):
     st.markdown("### Optimized Weights:")
     st.table(optimized_weights_df)
 
-st.title("My Optimized Portfolio")
+st.title("Stock Portfolio Optimization App")
 st.subheader("Akaash Mitsakakis-Nath")
 st.markdown(""" This app performs portfolio optimization using different optimization techniques. Enter your Stock tickers, initial allocations, historical data range, and finally the desired optimization criterion to get started.""")
 st.markdown("""
