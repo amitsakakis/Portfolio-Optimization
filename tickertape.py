@@ -2,8 +2,8 @@ import streamlit as st
 import yfinance as yf
 import pandas as pd
 
-def get_top_20_stocks():
-    # List of top 20 stock tickers (you can adjust this list as needed)
+def get_top_stocks():
+    # List of top  stock tickers - can add to list whenever its just for visual
     tickers = [
         'AAPL', 'MSFT', 'GOOG', 'AMZN', 'META',
         'TSLA', 'NVDA', 'BRK-B', 'JNJ', 'WMT',
@@ -54,7 +54,7 @@ def display_ticker_tape():
         unsafe_allow_html=True
     )
 
-    stock_data = get_top_20_stocks()
+    stock_data = get_top_stocks()
     stock_data['Display'] = stock_data.apply(
         lambda row: f"<span class='{ 'up' if row['Change'] >= 0 else 'down' }'>{row['Ticker']}: ${row['Price']:.2f} ({row['Change']:+.2f})</span>", axis=1
     )
