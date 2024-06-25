@@ -4,8 +4,4 @@ yfinance
 matplotlib
 scipy
 streamlit
-datetime
-multiprocessing
-functools
-math
 tickertape
