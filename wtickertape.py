@@ -11,34 +11,28 @@ from functools import partial
 import time
 import math
 
-import tickertape
-
-tickertape.display_ticker_tape()
-
-# Get stock data
+# Function to get stock data
 def get_stock_data(tickers, start_date, end_date):
-    # Check if any ticker is an empty string
-    if any(ticker == '' for ticker in tickers):
-        raise ValueError("Ticker names cannot be empty.")
-    
-    # Check if the end date is later than today
     if end_date > datetime.date.today():
         raise ValueError("End date should be no later than today.")
-    
-    # Check if the start date is earlier than the end date
     if start_date > end_date:
         raise ValueError("Start date should be earlier than end date.")
     
     data = yf.download(tickers, start=start_date, end=end_date)['Adj Close']
-    
-    # Drop the rows with NaN values
     data = data.dropna()
-    
-    # Check if the data is empty
     if data.empty:
-        raise ValueError("No data available for the entered stock tickers and date range.")
+        raise ValueError("No data available for the entered stock tickers and date range. Please validate your inputs, or try increasing the data range.")
     
     return data
+
+# Function to get largest 20 tickers by market cap
+def get_top_20_tickers():
+    # Use predefined list of largest 20 tickers by market cap
+    top_20_tickers = [
+        'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'TSLA', 'BRK-B', 'TSM', 'NVDA', 'JNJ',
+        'WMT', 'JPM', 'V', 'PG', 'UNH', 'HD', 'DIS', 'MA', 'PYPL', 'BAC'
+    ]
+    return top_20_tickers
 
 # Calculate portfolio performance
 def portfolio_performance(weights, returns):
@@ -73,21 +67,13 @@ def variance(weights, returns):
 
 # Main function to perform optimization
 def optimize_portfolio(tickers, initial_allocations, start_date, end_date, optimization_criterion='sharpe'):
-
-    # Get stock data
     data = get_stock_data(tickers, start_date, end_date)
-    
-    # Calculate daily returns
     returns = data.pct_change().dropna()
     
-    # Constraints and bounds
     constraints = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
     bounds = tuple((0, 1) for _ in range(len(tickers)))
-    
-    # Initial guess
     initial_guess = np.array(initial_allocations)
     
-    # Define the objective function based on the selected criterion
     if optimization_criterion == 'sharpe':
         objective_function = sharpe
         criterion_name = "Highest Sharpe Ratio"
@@ -103,7 +89,6 @@ def optimize_portfolio(tickers, initial_allocations, start_date, end_date, optim
     else:
         raise ValueError("Invalid optimization criterion.")
     
-    # Optimize portfolio
     optimized_results = minimize(objective_function, initial_guess, args=(returns,),
                                  method='SLSQP', bounds=bounds, constraints=constraints)
     
@@ -138,7 +123,6 @@ def plot_efficient_frontier(tickers, returns, optimized_weights, criterion_name,
     scatter = ax.scatter(results[1, :], results[0, :], c=results[2, :], cmap='viridis')
     plt.colorbar(scatter, ax=ax, label='Sharpe Ratio')
     
-    # Only plot the red star if the optimization criterion is not 'sharpe'
     if optimization_criterion != 'sharpe':
         ax.scatter(sdp, rp, marker='*', color='r', s=100, label='Maximum Sharpe Ratio')
     
@@ -167,17 +151,34 @@ def display_results(initial_guess, optimized_weights, returns, criterion_name):
     
     initial_weights_df = pd.DataFrame({
         'Ticker': tickers,
-        'Initial Weight (%)': initial_guess * 100  # Convert to percentage
+        'Initial Weight (%)': initial_guess * 100
     })
     st.markdown("### Initial Weights:")
     st.table(initial_weights_df)
     
     optimized_weights_df = pd.DataFrame({
         'Ticker': tickers,
-        'Optimized Weight (%)': optimized_weights * 100  # Convert to percentage
+        'Optimized Weight (%)': optimized_weights * 100
     })
     st.markdown("### Optimized Weights:")
     st.table(optimized_weights_df)
+
+# Function to fetch stock prices for the ticker tape
+def fetch_stock_data(tickers):
+    quote_table = yf.Tickers(tickers).history(period="1d")
+    prices = quote_table['Close'].iloc[-1].values.flatten()
+    previous_closes = quote_table['Close'].iloc[-2].values.flatten()
+    valid_data = {tickers[i]: (prices[i], previous_closes[i]) for i in range(len(tickers)) if not np.isnan(prices[i]) and not np.isnan(previous_closes[i])}
+    return valid_data
+
+# Function to create ticker tape HTML
+def create_ticker_tape(data):
+    html = '<div style="background-color:black;color:white;overflow:hidden;width:100%;"><marquee behavior="scroll" direction="left" scrollamount="5">'
+    for ticker, (price, prev_close) in data.items():
+        color = 'green' if price > prev_close else 'red'
+        html += f'<span style="margin-right:50px;color:{color};">{ticker}: ${price:.2f}</span>'
+    html += '</marquee></div>'
+    return html
 
 st.title("Stock Portfolio Optimization App")
 st.subheader("Akaash Mitsakakis-Nath")
@@ -190,25 +191,22 @@ st.markdown("""
 - **Volatility**: Represents the degree of variation of trading prices. Lower volatility is often preferred as it indicates a more stable investment.
 """)
 
-# User inputs
 default_tickers = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'META']
 
-# Group related inputs together
 with st.expander("Enter your portfolio details:"):
     tickers = []
     allocations = []
     num_tickers = st.number_input("Number of tickers:", min_value=1, max_value=10, value=5, step=1)
-    for i in range(num_tickers):  # Dynamic number of tickers
+    for i in range(num_tickers):
         col1, col2 = st.columns(2)
         ticker = col1.text_input(f"Ticker {i+1}:", default_tickers[i] if i < len(default_tickers) else '')
         if i < min(len(default_tickers), num_tickers):
             allocation = col2.number_input(f"Allocation for Ticker {i+1} (%):", value=float(100/min(len(default_tickers), num_tickers)), format='%.2f', step=0.01)
         else:
             allocation = col2.number_input(f"Allocation for Ticker {i+1} (%):", value=0.0, format='%.2f', step=0.01)
-        allocations.append(allocation / 100)  # Convert percentage to decimal
-        tickers.append(ticker)  # Append the ticker to the list
+        allocations.append(allocation / 100)
+        tickers.append(ticker)
 
-# Ensure the sum of allocations is approximately 1 or 100%
 if not math.isclose(sum(allocations), 1.0, rel_tol=1e-5):
     st.error("The sum of allocations must be approximately 100%.")
 else:
@@ -217,11 +215,9 @@ else:
         end_date = st.date_input("End date", datetime.date.today())
         optimization_criterion = st.selectbox("Optimization criterion:", ['sharpe', 'cvar', 'sortino', 'volatility'])
 
-    # Add a button to trigger portfolio optimization
 if st.button("Optimize Portfolio"):
     if start_date and end_date:
         try:
-            # Get stock data and check for NaN values
             data = get_stock_data(tickers, start_date, end_date)
             
             initial_guess, optimized_weights, returns, criterion_name = optimize_portfolio(tickers, allocations, start_date, end_date, optimization_criterion)
@@ -230,7 +226,6 @@ if st.button("Optimize Portfolio"):
             st.header("Portfolio Performance")
             display_results(initial_guess, optimized_weights, returns, criterion_name)
 
-            # Plot the efficient frontier
             st.markdown("---")
             st.header("Efficient Frontier")
             with st.spinner('Calculating and plotting the efficient frontier...'):
@@ -239,3 +234,10 @@ if st.button("Optimize Portfolio"):
             st.error(str(e))
         except Exception as e:
             st.error(f"An error occurred during portfolio optimization: {str(e)}")
+
+# Fetch and display stock ticker tape for the largest 20 tickers
+top_20_tickers = get_top_20_tickers()
+data = fetch_stock_data(top_20_tickers)
+ticker_tape_html = create_ticker_tape(data)
+st.components.v1.html(ticker_tape_html, height=50)
+

@@ -11,11 +11,20 @@ from functools import partial
 import time
 import math
 
+import tickertape
+
+tickertape.display_ticker_tape()
+
 # Get stock data
 def get_stock_data(tickers, start_date, end_date):
+    # Check if any ticker is an empty string
+    if any(ticker == '' for ticker in tickers):
+        raise ValueError("Ticker names cannot be empty.")
+    
     # Check if the end date is later than today
     if end_date > datetime.date.today():
         raise ValueError("End date should be no later than today.")
+    
     # Check if the start date is earlier than the end date
     if start_date > end_date:
         raise ValueError("Start date should be earlier than end date.")
@@ -27,7 +36,7 @@ def get_stock_data(tickers, start_date, end_date):
     
     # Check if the data is empty
     if data.empty:
-        raise ValueError("No data available for the entered stock tickers and date range. Please validate your inputs, or try increasinng data range.")
+        raise ValueError("No data available for the entered stock tickers and date range.")
     
     return data
 
