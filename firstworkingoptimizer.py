@@ -1,3 +1,5 @@
+##NOTE: THIS IS JUST AN OLDER VERSION OF THE CODE HERE FOR SHOW AND BECAUSE WHY NOT. THE APP DOESN'T USE THIS
+
 import numpy as np
 import pandas as pd
 import yfinance as yf
