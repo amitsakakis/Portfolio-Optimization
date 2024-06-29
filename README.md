@@ -29,9 +29,11 @@ The portfolio optimization model makes several assumptions:
 ### Sharpe Ratio
 
 The Sharpe Ratio is defined as:
-\[
+
+$$
 \text{Sharpe Ratio} = \frac{R_p - R_f}{\sigma_p}
-\]
+$$
+
 Where:
 
 - \( R_p \) is the portfolio return
@@ -41,16 +43,19 @@ Where:
 ### CVaR (Conditional Value at Risk)
 
 The CVaR is defined as the expected loss beyond the Value at Risk (VaR) threshold:
-\[
+
+$$
 \text{CVaR} = \mathbb{E}[L | L > \text{VaR}]
-\]
+$$
 
 ### Sortino Ratio
 
 The Sortino Ratio is defined as:
-\[
+
+$$
 \text{Sortino Ratio} = \frac{R_p - R_f}{\sigma_d}
-\]
+$$
+
 Where:
 
 - \( \sigma_d \) is the downside deviation
@@ -58,9 +63,10 @@ Where:
 ### Volatility
 
 Volatility is defined as the standard deviation of portfolio returns:
-\[
+
+$$
 \sigma_p
-\]
+$$
 
 ## The Efficient Frontier
 
