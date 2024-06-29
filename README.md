@@ -36,7 +36,8 @@ $$
 
 Where:
 
-- \( R_p \) is the portfolio return
+$$
+- \frac{\sigma_p} is the portfolio return
 - \( R_f \) is the risk-free rate
 - \( \sigma_p \) is the portfolio volatility
 
@@ -44,16 +45,22 @@ Where:
 
 The CVaR is defined as the expected loss beyond the Value at Risk (VaR) threshold:
 
+
 $$
+
 \text{CVaR} = \mathbb{E}[L | L > \text{VaR}]
+
 $$
 
 ### Sortino Ratio
 
 The Sortino Ratio is defined as:
 
+
 $$
+
 \text{Sortino Ratio} = \frac{R_p - R_f}{\sigma_d}
+
 $$
 
 Where:
@@ -64,8 +71,11 @@ Where:
 
 Volatility is defined as the standard deviation of portfolio returns:
 
+
 $$
+
 \sigma_p
+
 $$
 
 ## The Efficient Frontier
@@ -82,3 +92,4 @@ The application includes a real-time ticker tape displaying the current prices a
 
 © 2024 [Akaash Mitsakakis-Nath](https://github.com/amitsakakis).<br />
 This project is MIT licensed.
+$$
