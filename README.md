@@ -2,7 +2,7 @@
 
 ## Project Description
 
-This project is a Stock Portfolio Optimization application utilizing various optimization techniques to maximize portfolio performance. It features a graphical visualization of the efficient frontier and portfolio metrics. The application is interactive and web-hosted using [Streamlit's](https://streamlit.io) functionality.
+This project is a Stock Portfolio Optimization Calculator utilizing various optimization techniques to maximize portfolio performance. It includes graphical visualization of the efficient frontier and portfolio metrics. It is a web-hosted interactive application, hosted using [Streamlit's](https://streamlit.io) functionality.
 
 The project can be found here: [Link to Project](https://portfoliooptimizationapp.streamlit.app)
 
@@ -15,7 +15,7 @@ The **Portfolio Optimization** process aims to allocate assets in a way that max
 - **Sortino Ratio**: Similar to the Sharpe ratio but only considers downside risk (negative returns).
 - **Volatility**: Represents the degree of variation in trading prices, indicating stability.
 
-## Optimization Model Assumptions
+## Portfolio Optimization Assumptions
 
 The portfolio optimization model makes several assumptions:
 
@@ -32,6 +32,7 @@ The portfolio optimization model makes several assumptions:
 - **Volatility**: \(\sigma_p\)
 
 Where:
+
 - \(R_p\) is the portfolio return
 - \(R_f\) is the risk-free rate
 - \(\sigma_p\) is the portfolio volatility
@@ -43,7 +44,7 @@ The **Efficient Frontier** represents the set of optimal portfolios that offer t
 
 ![Efficient Frontier](efficient-frontier.png)
 
-## Ticker Tape
+## The Ticker Tape
 
 The application includes a real-time ticker tape displaying the current prices and changes of top stocks. This feature is implemented using yfinance and Streamlit.
 
