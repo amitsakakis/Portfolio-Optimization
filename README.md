@@ -24,20 +24,6 @@ The portfolio optimization model makes several assumptions:
 - The risk-free rate is known and constant.
 - There are no transaction costs.
 
-## Optimization Criteria Formulas
-
-- **Sharpe Ratio**: \( \frac{R_p - R_f}{\sigma_p} \)
-- **CVaR**: \( E[L \mid L > VaR] \)
-- **Sortino Ratio**: \( \frac{R_p - R_f}{\sigma_d} \)
-- **Volatility**: \( \sigma_p \)
-
-Where:
-
-- \( R_p \) is the portfolio return
-- \( R_f \) is the risk-free rate
-- \( \sigma_p \) is the portfolio volatility
-- \( \sigma_d \) is the downside deviation
-
 ## The Efficient Frontier
 
 The **Efficient Frontier** represents the set of optimal portfolios that offer the highest expected return for a defined level of risk. It is a key concept in Modern Portfolio Theory. This application leverages multiprocessing to efficiently calculate and plot the efficient frontier.
@@ -46,7 +32,7 @@ The **Efficient Frontier** represents the set of optimal portfolios that offer t
 
 ## The Ticker Tape
 
-The application includes a real-time ticker tape displaying the current prices and changes of top stocks. This feature is implemented using yfinance and Streamlit. The ticker tape shows the latest prices and price changes, scrolling across the screen to provide continuous updates.
+The application includes a real-time ticker tape displaying the current prices and changes of top stocks. This feature is implemented be fetching realtime data for top stock tickers from yfinance. The ticker tape shows the latest prices and price changes, scrolling across the screen to provide continuous updates. This is of course just for cosmetic puropses.
 
 ## 📝 License
 
