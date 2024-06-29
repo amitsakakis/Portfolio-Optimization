@@ -26,7 +26,7 @@ The portfolio optimization model makes several assumptions:
 
 ## The Efficient Frontier
 
-The **Efficient Frontier** represents the set of optimal portfolios that offer the highest expected return for a defined level of risk. It is a key concept in Modern Portfolio Theory. This application leverages multiprocessing to efficiently calculate and plot the efficient frontier.
+The **Efficient Frontier** represents the set of optimal portfolios that offer the highest expected return for a defined level of risk. It is a key concept in Modern Portfolio Theory. This application leverages **multiprocessing** to efficiently calculate and plot the efficient frontier.
 
 ![Efficient Frontier](efficient-frontier.png)
 
