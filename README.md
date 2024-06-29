@@ -26,7 +26,6 @@ The portfolio optimization model makes several assumptions:
 
 ## Optimization Criteria Formulas
 
-$$
 - **Sharpe Ratio**: \( \frac{R_p - R_f}{\sigma_p} \)
 - **CVaR**: \( E[L \mid L > VaR] \)
 - **Sortino Ratio**: \( \frac{R_p - R_f}{\sigma_d} \)
@@ -53,4 +52,6 @@ The application includes a real-time ticker tape displaying the current prices a
 
 © 2024 [Akaash Mitsakakis-Nath](https://github.com/amitsakakis).<br />
 This project is MIT licensed.
+
+$$
 $$
