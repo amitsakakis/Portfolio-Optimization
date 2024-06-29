@@ -4,7 +4,7 @@
 
 This project is a Stock Portfolio Optimization Calculator utilizing various optimization techniques to maximize portfolio performance. It includes graphical visualization of the efficient frontier and portfolio metrics. It is a web-hosted interactive application, hosted using [Streamlit's](https://streamlit.io) functionality.
 
-The project can be found here: [Link to Project](https://portfoliooptimizationapp.streamlit.app)
+The project can be found here: [Link to Project](https://stockportfoliooptimizationapp.streamlit.app)
 
 ## Portfolio Optimization
 
@@ -26,17 +26,41 @@ The portfolio optimization model makes several assumptions:
 
 ## Optimization Criteria Formulas
 
-- **Sharpe Ratio**: \(\frac{R_p - R_f}{\sigma_p}\)
-- **CVaR**: \(E[L | L > VaR]\)
-- **Sortino Ratio**: \(\frac{R_p - R_f}{\sigma_d}\)
-- **Volatility**: \(\sigma_p\)
+### Sharpe Ratio
 
+The Sharpe Ratio is defined as:
+\[
+\text{Sharpe Ratio} = \frac{R_p - R_f}{\sigma_p}
+\]
 Where:
 
-- \(R_p\) is the portfolio return
-- \(R_f\) is the risk-free rate
-- \(\sigma_p\) is the portfolio volatility
-- \(\sigma_d\) is the downside deviation
+- \( R_p \) is the portfolio return
+- \( R_f \) is the risk-free rate
+- \( \sigma_p \) is the portfolio volatility
+
+### CVaR (Conditional Value at Risk)
+
+The CVaR is defined as the expected loss beyond the Value at Risk (VaR) threshold:
+\[
+\text{CVaR} = \mathbb{E}[L | L > \text{VaR}]
+\]
+
+### Sortino Ratio
+
+The Sortino Ratio is defined as:
+\[
+\text{Sortino Ratio} = \frac{R_p - R_f}{\sigma_d}
+\]
+Where:
+
+- \( \sigma_d \) is the downside deviation
+
+### Volatility
+
+Volatility is defined as the standard deviation of portfolio returns:
+\[
+\sigma_p
+\]
 
 ## The Efficient Frontier
 
