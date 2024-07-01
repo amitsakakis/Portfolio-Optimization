@@ -17,12 +17,13 @@ The **Portfolio Optimization** process aims to allocate assets in a way that max
 
 ## Portfolio Optimization Assumptions
 
-The portfolio optimization model makes several assumptions:
+Portfolio Optimization Model Assumptions:
 
-- Historical returns are indicative of future performance.
-- Asset returns are normally distributed.
-- The risk-free rate is known and constant.
-- There are no transaction costs.
+- Historical Returns as Predictors: The model assumes that historical returns are indicative of future performance, using past stock data to estimate future returns.
+- Normal Distribution of Returns: The model assumes that asset returns follow a normal distribution, which simplifies the calculation of portfolio performance metrics.
+- No Transaction Costs: The model assumes there are no transaction costs associated with buying or selling assets, which could otherwise impact the optimization results.
+- Full Investment: The model assumes that all available capital is fully invested in the portfolio, with no cash reserves.
+- Fixed Time Horizon: The model assumes a fixed investment period, as specified by the start and end dates provided.
 
 ## The Efficient Frontier
 
