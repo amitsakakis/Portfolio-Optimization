@@ -28,6 +28,7 @@ def get_top_stocks():
 
     return combined_data
 
+#Literally just chatgptd this for the visual effects yk
 def display_ticker_tape():
     st.markdown(
         """
