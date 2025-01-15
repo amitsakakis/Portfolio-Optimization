@@ -6,13 +6,13 @@ def get_top_stocks():
     # List of top  stock tickers - can add to list whenever its just for visual
     tickers = [
         'AAPL', 'MSFT', 'GOOG', 'AMZN', 'META',
-        'TSLA', 'NVDA', 'BRK.B', 'JNJ', 'WMT',
+        'TSLA', 'NVDA', 'BRK-B', 'JNJ', 'WMT',
         'JPM', 'V', 'PG', 'DIS', 'MA',
         'PYPL', 'NFLX', 'INTC', 'ADBE', 'CSCO'
     ]
 
     # Fetch current data for the tickers
-    data = yf.download(tickers, period='5d', interval='1d')
+    data = yf.download(tickers, period='1d', interval='1h')
     
     # Handle NaN values by forward filling
     data = data.ffill().bfill()
@@ -28,7 +28,6 @@ def get_top_stocks():
 
     return combined_data
 
-#Literally just chatgptd this for the visual effects yk
 def display_ticker_tape():
     st.markdown(
         """
