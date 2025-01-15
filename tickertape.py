@@ -6,7 +6,7 @@ def get_top_stocks():
     # List of top  stock tickers - can add to list whenever its just for visual
     tickers = [
         'AAPL', 'MSFT', 'GOOG', 'AMZN', 'META',
-        'TSLA', 'NVDA', 'BRK-B', 'JNJ', 'WMT',
+        'TSLA', 'NVDA', 'BRK.B', 'JNJ', 'WMT',
         'JPM', 'V', 'PG', 'DIS', 'MA',
         'PYPL', 'NFLX', 'INTC', 'ADBE', 'CSCO'
     ]
