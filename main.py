@@ -137,7 +137,7 @@ def plot_efficient_frontier(tickers, returns, optimized_weights, criterion_name,
     scatter = ax.scatter(results[1, :], results[0, :], c=results[2, :], cmap='viridis')
     plt.colorbar(scatter, ax=ax, label='Sharpe Ratio')
     
-    # Don't plot red star if user picks max sharpe ratio criteria
+    # Only plot the red star if the optimization criterion is not 'sharpe', ie don't show the red star if it is sharpe
     if optimization_criterion != 'sharpe':
         ax.scatter(sdp, rp, marker='*', color='r', s=100, label='Maximum Sharpe Ratio')
     
@@ -205,7 +205,7 @@ with st.expander("Enter your portfolio details:"):
         else:
             allocation = col2.number_input(f"Allocation for Ticker {i+1} (%):", value=0.0, format='%.2f', step=0.01)
         allocations.append(allocation / 100)  # Convert percentage to decimal
-        tickers.append(ticker)  # Add ticker to the list
+        tickers.append(ticker)  # Append the ticker to the list
 
 # Ensure the sum of allocations is approximately 1 or 100%
 if not math.isclose(sum(allocations), 1.0, rel_tol=1e-5):
