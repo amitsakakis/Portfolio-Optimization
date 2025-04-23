@@ -3,7 +3,6 @@ import yfinance as yf
 import pandas as pd
 
 def get_top_stocks():
-    # List of top  stock tickers - can add to list whenever its just for visual
     tickers = [
         'AAPL', 'MSFT', 'GOOG', 'AMZN', 'META',
         'TSLA', 'NVDA', 'BRK-B', 'JNJ', 'WMT',
@@ -11,12 +10,13 @@ def get_top_stocks():
         'PYPL', 'NFLX', 'INTC', 'ADBE', 'CSCO'
     ]
 
-    # Fetch current data for the tickers
+    # Try 5-day period instead of 1-day for more robust data
     data = yf.download(tickers, period='5d', interval='1h')
-    
-    # Handle NaN values by forward filling
     data = data.ffill().bfill()
-    
+
+    if 'Adj Close' not in data or len(data['Adj Close']) < 2:
+        return pd.DataFrame(columns=['Ticker', 'Price', 'Previous Price', 'Change'])  # Empty, avoid crash
+
     current_data = data['Adj Close'].iloc[-1].reset_index()
     previous_close_data = data['Adj Close'].iloc[-2].reset_index()
     
@@ -27,6 +27,7 @@ def get_top_stocks():
     combined_data['Change'] = combined_data['Price'] - combined_data['Previous Price']
 
     return combined_data
+
 
 def display_ticker_tape():
     st.markdown(
