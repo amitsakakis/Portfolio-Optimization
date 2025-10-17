@@ -19,8 +19,8 @@ except Exception:
 st.set_page_config(page_title="Stock Portfolio Optimization", layout="centered")
 
 TODAY = datetime.date.today()
-DEFAULT_START = TODAY - datetime.timedelta(days=7)
-DEFAULT_END = TODAY
+DEFAULT_START = TODAY - datetime.timedelta(days=372)
+DEFAULT_END = TODAY - datetime.timedelta(days=7)
 
 @st.cache_data(show_spinner=False, ttl=60*15)
 def _yf_download(tickers, start_date, end_date):
