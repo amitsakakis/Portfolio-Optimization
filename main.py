@@ -42,17 +42,21 @@ def _yf_download_with_timeout(tickers, start_date, end_date, timeout_sec=30):
     raise RuntimeError(f"yfinance download failed: {last_err}")
 
 @st.cache_data(show_spinner=False, ttl=60*10)
-def _load_prices(tickers, start_date, end_date, tz):
+def _load_prices(tickers, start_date, end_date):
     df = _yf_download_with_timeout(tickers, start_date, end_date)
     if df is None or df.empty:
         raise ValueError("No price data returned.")
     try:
         adj = df["Adj Close"]
     except Exception:
-        if "Adj Close" in df.columns: adj = df[["Adj Close"]]
-        elif "Close" in df.columns:   adj = df[["Close"]]
-        else: raise ValueError("Missing 'Adj Close'/'Close' in data.")
-    if isinstance(adj, pd.Series): adj = adj.to_frame()
+        if "Adj Close" in df.columns:
+            adj = df[["Adj Close"]]
+        elif "Close" in df.columns:
+            adj = df[["Close"]]
+        else:
+            raise ValueError("Missing 'Adj Close'/'Close' in data.")
+    if isinstance(adj, pd.Series):
+        adj = adj.to_frame()
     if isinstance(adj.columns, pd.MultiIndex):
         if adj.columns.nlevels >= 2:
             adj.columns = adj.columns.get_level_values(1)
@@ -61,22 +65,44 @@ def _load_prices(tickers, start_date, end_date, tz):
         raise ValueError("All adjusted prices are NaN for the selected range.")
     return adj
 
+def sanitize_tickers(raw):
+    cleaned = []
+    for t in raw:
+        if t is None:
+            s = ""
+        elif isinstance(t, str):
+            s = t
+        elif isinstance(t, (float, int, np.floating, np.integer)):
+            s = "" if pd.isna(t) else str(t)
+        else:
+            s = str(t)
+        s = s.strip().upper()
+        cleaned.append(s)
+    return cleaned
+
 def get_stock_data(tickers, start_date, end_date, tz):
-    tickers = [t.strip().upper() for t in tickers]
-    if any(t == "" for t in tickers): raise ValueError("Ticker names cannot be empty.")
-    if end_date > _today(tz): raise ValueError("End date should be no later than today.")
-    if start_date > end_date: raise ValueError("Start date should be earlier than end date.")
-    raw = _load_prices(tickers, start_date, end_date, tz)
+    tickers = sanitize_tickers(tickers)
+    if any(t == "" for t in tickers):
+        raise ValueError("Ticker names cannot be empty.")
+    if end_date > _today(tz):
+        raise ValueError("End date should be no later than today.")
+    if start_date > end_date:
+        raise ValueError("Start date should be earlier than end date.")
+    raw = _load_prices(tickers, start_date, end_date)
     cols = [c for c in raw.columns if c in tickers]
-    if not cols: raise ValueError("None of the requested tickers returned prices.")
+    if not cols:
+        raise ValueError("None of the requested tickers returned prices.")
     data = raw[cols].dropna()
-    if data.empty: raise ValueError("No usable price data for the tickers/date range.")
+    if data.empty:
+        raise ValueError("No usable price data for the tickers/date range.")
     return data
 
-def daily_returns(prices): return prices.pct_change().dropna()
+def daily_returns(prices):
+    return prices.pct_change().dropna()
 
 def perf(weights, rets):
-    m = rets.mean().values; C = rets.cov().values
+    m = rets.mean().values
+    C = rets.cov().values
     r = float(np.dot(weights, m) * 252.0)
     v = float(np.sqrt(weights @ (C * 252.0) @ weights))
     s = r / v if v > 0 else np.nan
@@ -84,10 +110,15 @@ def perf(weights, rets):
 
 def obj_sharpe(w, R): return -perf(w, R)[2]
 def obj_cvar(w, R, a=0.05):
-    p = R.values @ w; mu = p.mean(); sd = p.std(ddof=1); z = norm.ppf(a)
+    p = R.values @ w
+    mu = p.mean()
+    sd = p.std(ddof=1)
+    z = norm.ppf(a)
     return -(mu - sd * z)
 def obj_sortino(w, R):
-    p = R.values @ w; d = p[p < 0]; ds = d.std(ddof=1) if len(d) else 0.0
+    p = R.values @ w
+    d = p[p < 0]
+    ds = d.std(ddof=1) if len(d) else 0.0
     return np.inf if ds == 0 else -(p.mean() / ds)
 def obj_var(w, R):
     C = R.cov().values
@@ -98,7 +129,6 @@ def optimize_portfolio(tickers, allocs, start_date, end_date, crit, tz):
         prices = get_stock_data(tickers, start_date, end_date, tz)
         s.update(label="Computing returns...")
         R = daily_returns(prices)
-        if len(R) < 5: st.warning("Very few return rows — results may be unstable.")
         s.update(label="Optimizing...")
         cons = ({'type': 'eq', 'fun': lambda x: float(np.sum(x) - 1.0)},)
         bnds = tuple((0.0, 1.0) for _ in range(len(tickers)))
@@ -122,31 +152,44 @@ def optimize_portfolio(tickers, allocs, start_date, end_date, crit, tz):
 
 def plot_ef(tickers, R, w_opt, name, crit):
     np.random.seed(42)
-    n = len(tickers); N = 3500
+    n = len(tickers)
+    N = 3500
     m = R.mean().values * 252.0
     C = R.cov().values * 252.0
-    W = np.random.rand(N, n); W /= W.sum(axis=1, keepdims=True)
+    W = np.random.rand(N, n)
+    W /= W.sum(axis=1, keepdims=True)
     rets = W @ m
     vols = np.sqrt(np.einsum('ij,jk,ik->i', W, C, W))
     sh = np.divide(rets, vols, out=np.full_like(rets, np.nan), where=vols > 0)
-    i = np.nanargmax(sh); sdp, rp = float(vols[i]), float(rets[i])
+    i = np.nanargmax(sh)
+    sdp, rp = float(vols[i]), float(rets[i])
     fig, ax = plt.subplots()
     sc = ax.scatter(vols, rets, c=sh, cmap='viridis')
     plt.colorbar(sc, ax=ax, label='Sharpe')
-    if crit != 'sharpe': ax.scatter(sdp, rp, marker='*', s=120, label='Max Sharpe')
+    if crit != 'sharpe':
+        ax.scatter(sdp, rp, marker='*', s=120, label='Max Sharpe')
     r_opt, v_opt, _ = perf(w_opt, R)
     ax.scatter(v_opt, r_opt, marker='o', s=120, label=f'Optimized ({name})')
-    ax.set_xlabel('Volatility (annual)'); ax.set_ylabel('Return (annual)'); ax.legend(loc='upper left')
+    ax.set_xlabel('Volatility (annual)')
+    ax.set_ylabel('Return (annual)')
+    ax.legend(loc='upper left')
     st.pyplot(fig)
 
 def show_results(tickers, w0, w, R, name):
-    ir, iv, is_ = perf(w0, R); or_, ov, os_ = perf(w, R)
+    ir, iv, is_ = perf(w0, R)
+    or_, ov, os_ = perf(w, R)
     st.markdown("### Initial Portfolio Performance")
-    st.markdown(f"**Return:** {ir:.2f}"); st.markdown(f"**Volatility:** {iv:.2f}"); st.markdown(f"**Sharpe Ratio:** {is_:.2f}")
+    st.markdown(f"**Return:** {ir:.2f}")
+    st.markdown(f"**Volatility:** {iv:.2f}")
+    st.markdown(f"**Sharpe Ratio:** {is_:.2f}")
     st.markdown(f"### Optimized Portfolio Performance ({name})")
-    st.markdown(f"**Return:** {or_:.2f}"); st.markdown(f"**Volatility:** {ov:.2f}"); st.markdown(f"**Sharpe Ratio:** {os_:.2f}")
-    st.markdown("### Initial Weights"); st.table(pd.DataFrame({'Ticker': tickers,'Initial Weight (%)': np.array(w0)*100.0}))
-    st.markdown("### Optimized Weights"); st.table(pd.DataFrame({'Ticker': tickers,'Optimized Weight (%)': np.array(w)*100.0}))
+    st.markdown(f"**Return:** {or_:.2f}")
+    st.markdown(f"**Volatility:** {ov:.2f}")
+    st.markdown(f"**Sharpe Ratio:** {os_:.2f}")
+    st.markdown("### Initial Weights")
+    st.table(pd.DataFrame({'Ticker': tickers,'Initial Weight (%)': np.array(w0)*100.0}))
+    st.markdown("### Optimized Weights")
+    st.table(pd.DataFrame({'Ticker': tickers,'Optimized Weight (%)': np.array(w)*100.0}))
 
 st.title("Stock Portfolio Optimization App")
 st.subheader("Akaash Mitsakakis-Nath")
@@ -178,11 +221,20 @@ run = st.button("Optimize Portfolio")
 
 if run:
     try:
+        tickers = sanitize_tickers(tickers)
+        invalid_positions = [i+1 for i, t in enumerate(tickers) if t == ""]
+        if invalid_positions:
+            st.error(f"Please fill all ticker fields. Empty/invalid at: {invalid_positions}")
+            st.stop()
         if not math.isclose(sum(allocations), 1.0, rel_tol=1e-5, abs_tol=1e-8):
-            st.error("The sum of allocations must be approximately 100%."); st.stop()
+            st.error("The sum of allocations must be approximately 100%.")
+            st.stop()
         w0, w, R, name = optimize_portfolio(tickers, allocations, start_date, end_date, crit, tz)
-        st.markdown("---"); st.header("Portfolio Performance"); show_results(tickers, w0, w, R, name)
-        st.markdown("---"); st.header("Efficient Frontier")
+        st.markdown("---")
+        st.header("Portfolio Performance")
+        show_results(tickers, w0, w, R, name)
+        st.markdown("---")
+        st.header("Efficient Frontier")
         with st.spinner('Calculating and plotting the efficient frontier...'):
             plot_ef(tickers, R, w, name, crit)
     except ValueError as e:
