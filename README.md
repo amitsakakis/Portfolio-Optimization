@@ -31,10 +31,6 @@ The **Efficient Frontier** represents the set of optimal portfolios that offer t
 
 ![Efficient Frontier](efficient-frontier.png)
 
-## The Ticker Tape
-
-The application includes a real-time ticker tape displaying the current prices and changes of top stocks. This feature is implemented be fetching realtime data for top stock tickers from yfinance. The ticker tape shows the latest prices and price changes, scrolling across the screen to provide continuous updates. This is of course just for cosmetic puropses.
-
 ## 📝 License
 
 © 2024 [Akaash Mitsakakis-Nath](https://github.com/amitsakakis).<br />
